@@ -1,0 +1,55 @@
+<?php declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\View\Element\Template;
+
+/** @var ViewModelRegistry $viewModels */
+/** @var Template $block */
+
+?>
+<div class="bg-container border-t border-b border-container">
+   <div class="container px-5 py-6 mx-auto itmes-center sm:flex-row flex-col" x-data="cmsBlock()" x-init="init">
+        <div x-html="block.title"></div>
+        <div x-html="block.content"></div>
+   </div>
+</div>
+
+<script>
+    function cmsBlock() {
+        return {
+            block: {
+                title: '',
+                content: '',
+                identifier: ''
+            },
+            init: function() {
+                const url = BASE_URL + 'graphql';
+                fetch(url, {
+                    method: 'POST'
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: `{
+                            cmsBlocks(identifiers:["home-page-block"]){
+                                items {
+                                    title
+                                    identifier
+                                    content
+                                }
+                            }
+                        }`
+                    })
+                })
+                    .then(response => response.json())
+                    .then(responseJson => {
+                        this.block.content = responseJson.data.cmsBlocks.items[0].content;
+                        this.block.title = responseJson.data.cmsBlocks.items[0].title;
+                        this.block.identifier = responseJson.data.cmsBlocks.items[0].identifier;
+                    });
+            }
+        };
+    }
+</script>
+
+

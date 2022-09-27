@@ -1,0 +1,154 @@
+<?php declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magebit\Example\ViewModel\ContactDetails;
+
+/** @var ViewModelRegistry $viewModels */
+/** @var ContactDetails $contactDetails */
+
+$contactDetails = $viewModels->require(ContactDetails::class);
+$testData = ['name' => 'a' , 'name' => 'b', 'name' => 'c'];
+$test = '1221323';
+?>
+
+<h1 class="bg-indigo-500">Phone: <?= $contactDetails->getPhoneNumber() ?></h1>
+<div x-data="{ isOpen: true }">
+    <button x-on:click="isOpen = !isOpen" :style="{ background: 'red', display: 'flex' }">Toggle</button>
+    <h1 x-show="isOpen">Hello World</h1>
+
+    <div x-data="{ name: '' }" :class="name ? 'bg-yellow-500' : ''">
+        <input type="text" x-model="name" />
+        <div x-text="name"/>
+    </div>
+</div>
+
+<div x-data="example()" x-init="init" class="example">
+    This is an example
+</div>
+
+<script>
+    function example() {
+        return {
+            init: function() {
+                console.log('Current element', this.$el);
+            }
+        }
+    }
+</script>
+
+<!-- Next tick -->
+
+<div x-data="{ fruit: 'apple' }">
+    <button
+        x-on:click="
+            fruit = 'pear';
+            console.log($event.target.innerText);
+            $nextTick(() => { console.log($event.target.innerText) });
+        "
+        x-text="fruit"
+    ></button>
+</div>
+
+<!-- x-ref -->
+
+<div x-data="exampleRef()" x-init="init">
+    <input type="text" x-ref="exampleInput" x-model="exampleInput" /><br/>
+    In uppercase: <span x-text="exampleInput.toUpperCase()"></span>
+</div>
+
+<script>
+    function exampleRef() {
+        return {
+            exampleInput: '',
+            init: function() {
+                this.$refs.exampleInput.focus();
+            }
+        }
+    }
+</script>
+
+<!-- Focus on input -->
+
+<div x-data="toggleButton()">
+    <button x-on:click="toggleInput">Toggle</button>
+    <input type="text" x-show="showInput" x-ref="exampleInput" x-model="exampleInput"/>
+</div>
+
+
+<script>
+    function toggleButton() {
+        return {
+            showInput: false,
+            exampleInput: '',
+            toggleInput: function() {
+                this.showInput = !this.showInput;
+                if(this.showInput) {
+                    this.$nextTick(() => {
+                        this.$refs.exampleInput.focus();
+                    });
+                }
+            }
+        }
+    }
+</script>
+
+<!-- Watching the value -->
+
+<div class="x-data="exampleWatcher()" x-init="init">
+    <h1 class="text-red-500 p-5">Watcher</h1>
+    <button @click="open = ! open" class="text-blue-900 bg-yellow-500">
+        Click to change value.
+    </button>
+    <div class="flex">
+        The last value:
+        <div x-text="oldOpen"/>
+    </div>
+</div>
+
+<script>
+    function exampleWatcher() {
+        return {
+            open: false,
+            oldOpen: false,
+            init: function() {
+                this.$watch('open', (newValue) => {
+                    this.oldOpen = newValue;
+                });
+            }
+        }
+    }
+</script>
+
+<!-- x-spread -->
+
+<div x-data="dropdown()">
+    <button x-spread="trigger">Open Dropdown</button>
+    <div class="bg-white p-4 origin-top-right rounded-md w-56 h-20 shadow-2xl"
+        x-spread="dialogue"
+        role="menu">
+            Dropdown Contents
+    </div>
+</div>
+
+<script>
+    function dropdown() {
+        return {
+            open: false,
+            trigger: {
+                ['@click']() {
+                    this.open = true
+                },
+            },
+            dialogue: {
+                ['x-show']() {
+                    return this.open
+                },
+                ['@click.away']() {
+                    this.open = false
+                },
+            }
+        }
+    }
+</script>
+
+
