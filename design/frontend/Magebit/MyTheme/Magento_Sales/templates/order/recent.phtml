@@ -1,0 +1,168 @@
+<?php
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes 2020-present. All rights reserved.
+ * This product is licensed per Magento install
+ * See https://hyva.io/license
+ */
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HeroiconsOutline;
+use Magebit\Sales\Block\Order\CustomRecent;
+
+/** @var CustomRecent $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var HeroiconsOutline $heroicons */
+
+$heroicons = $viewModels->require(HeroiconsOutline::class);
+$orders = $block->getOrders();
+$orders_data = json_encode($orders->getData());
+?>
+
+<div x-data="initOrders()" x-init="init" class="recent-orders block block-dashboard-orders border border-solid border-grey-light">
+    <div class="block-title order my-6 mx-8 flex justify-between items-center">
+        <span class="text-xl block text-blue-dark font-sans font-bold">Pēdējie pasūtījumi</span>
+    </div>
+    <div class="px-8 py-4 bg-blue-dark grid grid-cols-3 lg:grid-cols-6"
+         id="my-orders-table">
+        <div class="text-sm p-2 pl-0 text-white font-bold uppercase">
+            Pasūtijuma Nr.
+        </div>
+        <div class="text-sm hidden lg:flex p-2 text-white font-bold uppercase">
+            <div>
+                Datums
+            </div>
+            <div @click="changeSortingDirection" class="ml-1 hover:cursor-pointer" :class="sortingDirection ? '' : 'rotate-180'">
+                <?= $heroicons->chevronDownHtml() ?>
+            </div>
+        </div>
+        <div class="text-sm hidden lg:block p-2 text-white font-bold uppercase">
+            Pasūtītājs
+        </div>
+        <div class="text-sm hidden lg:block p-2 text-white font-bold uppercase">
+            Summa
+        </div>
+        <div class="text-sm p-2 text-white font-bold uppercase">
+            Statuss
+        </div>
+        <div class="text-sm p-2 text-right text-white font-bold uppercase">
+            View
+        </div>
+    </div>
+    <template x-for="(order, index) in orders" :key="index">
+        <div class="px-8 grid grid-cols-3 lg:grid-cols-6 font-raleway border-b border-solid border-grey-light">
+            <div class="text-sm p-2 pl-0 text-red-light">
+                <div x-text="order['increment_id']"></div>
+            </div>
+            <div class="text-sm hidden lg:block p-2 text-grey-dark">
+                <div x-text="orders[index]['created_at']"></div>
+            </div>
+            <div class="text-sm p-2 text-grey-dark flex flex-wrap">
+                <div x-text="order['customer_firstname']" class="mr-1"></div>
+                <div x-text="order['customer_lastname']"></div>
+            </div>
+            <div class="text-sm hidden lg:flex p-2 text-grey-dark font-bold">
+                <div class="mr-1">€</div>
+                <div x-text="order['grand_total']"></div>
+            </div>
+            <div class="text-sm hidden lg:block p-2 text-black">
+                <div
+                    class="before:mr-1 before:text-xl before:content-['•']"
+                    :class="orderStatusClass(order['status'])"
+                    x-text="orderStatus(order['status'])">
+                </div>
+            </div>
+            <div class="text-sm p-2 text-right text-black">
+                <div @click="viewOrder" class="flex justify-end text-blue-dark cursor-pointer hover:text-grey-dark">
+                    <?= $heroicons->eyeHtml() ?>
+                </div>
+            </div>
+        </div>
+    </template>
+    <div @click="viewAllOrders" class="w-44 ml-8 my-5 py-3 px-6 bg-red-darker uppercase text-center text-sm text-white hover:cursor-pointer">
+        skatīt visu
+    </div>
+</div>
+
+<script>
+    function initOrders(){
+        return {
+            orders: [],
+            sortingDirection: true,
+            changeSortingDirection: function () {
+                const sortingDirection = !this.sortingDirection;
+
+                this.orders = this.orders.sort(function(a,b){
+                    if (sortingDirection) {
+                        return new Date(a.created_at) - new Date(b.created_at);
+                    }
+
+                    return new Date(b.created_at) - new Date(a.created_at);
+                });
+
+                this.sortingDirection = sortingDirection;
+            },
+            viewAllOrders: function(){
+                window.location.href = '<?= $block->getUrl('sales/order/history') ?>';
+            },
+            viewOrder: function () {
+                window.location.href = '<?= $block->getUrl('sales/order/view') ?>';
+            },
+            roundNumber: function (number) {
+                return Number.parseFloat(number).toFixed(2);
+            },
+            changeDateFormat: function (date) {
+                return date.split(' ')[0].split('-').reverse().join('.');
+            },
+            orderStatus: function (status) {
+                switch (status) {
+                    case 'pending':
+                        return 'Gaida';
+                    case 'new':
+                        return 'Jauns';
+                    case 'processing':
+                        return 'Apstrādā';
+                    case 'complete':
+                        return 'Pabeigts';
+                    case 'closed':
+                        return 'Aizvērts';
+                    case 'canceled':
+                        return 'Atcelts';
+                    case 'holded':
+                        return 'Aizturēts';
+                    default:
+                        return 'Nezināms';
+                }
+            },
+            orderStatusClass: function(status) {
+                switch (status) {
+                    case 'pending':
+                        return 'before:text-yellow-500';
+                    case 'processing':
+                        return 'before:text-orange-500';
+                    case 'complete':
+                        return 'before:text-green-500';
+                    case 'closed':
+                        return 'before:text-red-500';
+                    case 'canceled':
+                        return 'before:text-red-500';
+                    case 'holded':
+                        return 'before:text-purple-500';
+                    default:
+                        return 'before:text-grey-500';
+                }
+            },
+            init: function () {
+                const orderData = [...JSON.parse('<?= $orders_data ?>')];
+
+                orderData.forEach((order) => {
+                    order['grand_total'] = this.roundNumber(order['grand_total']);
+                    order['created_at'] = this.changeDateFormat(order['created_at']);
+                });
+
+                this.orders = orderData;
+            }
+        }
+    }
+</script>

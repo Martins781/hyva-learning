@@ -1,0 +1,37 @@
+.account-nav ul li a {
+    @apply pl-10 text-base text-grey-medium py-5;
+}
+
+.account-nav-content {
+    @apply !pt-0;
+}
+
+.account-nav ul li strong {
+    @apply !no-underline
+        pl-10
+        py-5
+        text-grey-darker
+        border-l-8
+        border-red-light
+        bg-gradient-to-r
+        from-red-light/5
+        to-transparent
+        bg-opacity-50;
+}
+
+.account-nav.filter-option {
+    @apply px-0 pt-0 pb-0 !important;
+}
+
+.breadcrumbs a{
+    @apply !text-grey-medium;
+}
+
+.breadcrumbs {
+    @apply bg-transparent shadow-none !important;
+}
+
+.page-title {
+    @apply text-4xl text-grey-darker font-normal;
+}
+

@@ -354,7 +354,9 @@ return [
         'Hyva_LumaCheckout' => 1,
         'MSP_Common' => 1,
         'MSP_DevTools' => 1,
-        'Magebit_Example' => 1,
+        'Magebit_Example' => 0,
+        'Magebit_Sales' => 1,
+        'Magebit_Task' => 1,
         'PayPal_Braintree' => 1,
         'PayPal_BraintreeGraphQl' => 1,
         'Temando_ShippingRemover' => 1
