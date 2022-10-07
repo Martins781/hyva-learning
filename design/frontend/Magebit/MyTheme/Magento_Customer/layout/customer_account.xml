@@ -12,7 +12,7 @@
     <body>
         <referenceBlock name="sidebar.main.account_nav">
             <action method="setTemplate">
-                <argument name="template" xsi:type="string">Magento_Customer::dashboard.phtml</argument>
+                <argument name="template" xsi:type="string">Magento_Customer::menu.phtml</argument>
             </action>
         </referenceBlock>
 

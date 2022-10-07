@@ -74,7 +74,7 @@ $orders_data = json_encode($orders->getData());
                 </div>
             </div>
             <div class="text-sm p-2 text-right text-black items-center">
-                <div @click="viewOrder" class="flex justify-end text-blue-dark cursor-pointer hover:text-grey-dark">
+                <div @click="viewOrder(order['entity_id'])" class="flex justify-end text-blue-dark cursor-pointer hover:text-grey-dark">
                     <?= $heroicons->eyeHtml() ?>
                 </div>
             </div>
@@ -108,8 +108,8 @@ $orders_data = json_encode($orders->getData());
             viewAllOrders: function(){
                 window.location.href = '<?= $block->getUrl('sales/order/history') ?>';
             },
-            viewOrder: function () {
-                window.location.href = '<?= $block->getUrl('sales/order/view') ?>';
+            viewOrder: function (id) {
+                window.location.href = '<?= $block->getUrl('sales/order/view/')?>' + 'order_id/' + id;
             },
             roundNumber: function (number) {
                 return Number.parseFloat(number).toFixed(2);
