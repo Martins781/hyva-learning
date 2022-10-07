@@ -4266,6 +4266,14 @@ fieldset ~ fieldset {
 	content: "";
 	margin-right: 0.25rem;
 }
+.before\:flex::before {
+	content: "";
+	display: flex;
+}
+.before\:items-center::before {
+	content: "";
+	align-items: center;
+}
 .before\:text-xl::before {
 	content: "";
 	font-size: 1.25rem;

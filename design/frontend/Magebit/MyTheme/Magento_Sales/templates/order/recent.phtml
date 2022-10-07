@@ -52,28 +52,28 @@ $orders_data = json_encode($orders->getData());
     </div>
     <template x-for="(order, index) in orders" :key="index">
         <div class="px-8 grid grid-cols-3 lg:grid-cols-6 font-raleway border-b border-solid border-grey-light">
-            <div class="text-sm p-2 pl-0 text-red-light">
-                <div x-text="order['increment_id']"></div>
+            <div class="text-sm p-2 pl-0 text-red-light flex items-center">
+                <div class="items-center" x-text="order['increment_id']"></div>
             </div>
-            <div class="text-sm hidden lg:block p-2 text-grey-dark">
-                <div x-text="orders[index]['created_at']"></div>
+            <div class="text-sm hidden lg:flex p-2 text-grey-dark items-center">
+                <div class="items-center" x-text="orders[index]['created_at']"></div>
             </div>
-            <div class="text-sm p-2 text-grey-dark flex flex-wrap">
+            <div class="text-sm p-2 text-grey-dark flex flex-wrap items-center">
                 <div x-text="order['customer_firstname']" class="mr-1"></div>
                 <div x-text="order['customer_lastname']"></div>
             </div>
-            <div class="text-sm hidden lg:flex p-2 text-grey-dark font-bold">
+            <div class="text-sm hidden lg:flex p-2 text-grey-dark font-bold items-center">
                 <div class="mr-1">€</div>
                 <div x-text="order['grand_total']"></div>
             </div>
             <div class="text-sm hidden lg:block p-2 text-black">
                 <div
-                    class="before:mr-1 before:text-xl before:content-['•']"
+                    class="before:mr-1 before:text-xl before:content-['•'] items-center flex"
                     :class="orderStatusClass(order['status'])"
                     x-text="orderStatus(order['status'])">
                 </div>
             </div>
-            <div class="text-sm p-2 text-right text-black">
+            <div class="text-sm p-2 text-right text-black items-center">
                 <div @click="viewOrder" class="flex justify-end text-blue-dark cursor-pointer hover:text-grey-dark">
                     <?= $heroicons->eyeHtml() ?>
                 </div>
@@ -89,6 +89,8 @@ $orders_data = json_encode($orders->getData());
     function initOrders(){
         return {
             orders: [],
+            ascOrders: [],
+            descOrders: [],
             sortingDirection: true,
             changeSortingDirection: function () {
                 const sortingDirection = !this.sortingDirection;
@@ -159,6 +161,14 @@ $orders_data = json_encode($orders->getData());
                 orderData.forEach((order) => {
                     order['grand_total'] = this.roundNumber(order['grand_total']);
                     order['created_at'] = this.changeDateFormat(order['created_at']);
+                });
+
+                this.orders = this.orders.sort(function(a,b){
+                    if (sortingDirection) {
+                        return new Date(a.created_at) - new Date(b.created_at);
+                    }
+
+                    return new Date(b.created_at) - new Date(a.created_at);
                 });
 
                 this.orders = orderData;
