@@ -14,7 +14,7 @@
         <referenceBlock  name="customer_account_dashboard_info" remove="true"/>
         <referenceBlock  name="customer_account_dashboard_address" remove="true"/>
         <referenceContainer name="content">
-            <block class="Magebit\Sales\Block\Order\CustomRecent" name="customer_account_table_top" template="Magento_Sales::order/recent.phtml"/>
+            <block class="Magebit\Sales\Block\Order\CustomRecent" name="customer_account_dashboard_top" template="Magento_Sales::order/recent.phtml"/>
         </referenceContainer>
     </body>
 </page>
